@@ -1,11 +1,11 @@
-import json
-import urllib2
-import urllib
-import hmac
-import hashlib
 import base64
 import datetime
+import hashlib
+import hmac
+import json
 from random import randint
+
+from .compat import HTTPError, Request, urlencode, URLError, urlopen
 
 
 class ClientBaseException(Exception):
@@ -159,7 +159,7 @@ class Client(object):
         :return:
         """
         if self.verbose is True:
-            print "\ncrossbarhttp: Request: %s %s" % (method, url)
+            print("\ncrossbarhttp: Request: %s %s" % (method, url))
 
         if json_params is not None:
             encoded_params = json.dumps(json_params)
@@ -169,11 +169,11 @@ class Client(object):
             headers = {}
 
         if encoded_params is not None and self.verbose is True:
-            print "crossbarhttp: Params: " + encoded_params
+            print("crossbarhttp: Params: " + encoded_params)
 
         if self.key is not None and self.secret is not None and encoded_params is not None:
             signature, nonce, timestamp = self._compute_signature(encoded_params)
-            params = urllib.urlencode({
+            params = urlencode({
                 "timestamp": timestamp,
                 "seq": str(self.sequence),
                 "nonce": nonce,
@@ -181,27 +181,27 @@ class Client(object):
                 "key": self.key
             })
             if self.verbose is True:
-                print "crossbarhttp: Signature Params: " + params
+                print("crossbarhttp: Signature Params: " + params)
             url += "?" + params
 
         # TODO: I can't figure out what this is.  Guessing it is a number you increment on every call
         self.sequence += 1
 
         try:
-            request = urllib2.Request(url, encoded_params, headers)
+            request = Request(url, encoded_params, headers)
             request.get_method = lambda: method
-            response = urllib2.urlopen(request).read()
+            response = urlopen(request).read()
             if self.verbose is True:
-                print "crossbarhttp: Response: " + response
+                print("crossbarhttp: Response: " + response)
 
             return json.loads(response)
 
-        except urllib2.HTTPError, e:
+        except HTTPError as e:
             if e.code == 400:
                 raise ClientMissingParams(str(e))
             elif e.code == 401:
                 raise ClientSignatureError(str(e))
             else:
                 raise ClientBadUrl(str(e))
-        except urllib2.URLError, e:
+        except URLError as e:
             raise ClientBadHost(str(e))
