@@ -1,7 +1,9 @@
-import unittest
-import crossbarhttp
 import os
-from mock import MagicMock
+import unittest
+
+import crossbarhttp
+from crossbarhttp.compat import mock
+
 
 class CrossbarHttpTests(unittest.TestCase):
 
@@ -99,7 +101,7 @@ class CrossbarHttpTests(unittest.TestCase):
         client = crossbarhttp.Client(self.__class__.url + "/call-signature",
                                      key="key", secret="secret")
 
-        client._make_api_call = MagicMock(return_value="{}")
+        client._make_api_call = mock.MagicMock(return_value="{}")
 
         result = client.call("test.add", 2, 3, offset=10)
         self.assertIsNone(result)
