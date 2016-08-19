@@ -1,4 +1,14 @@
-from distutils.core import setup
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+
 setup(
     name='crossbarhttp',
     packages=['crossbarhttp'],
@@ -8,7 +18,7 @@ setup(
     license='MIT',
     author_email='eric@thehq.io',
     url='https://github.com/thehq/python-crossbarhttp',
-    keywords=['wamp', 'crossbar'],
+    keywords=['wamp', 'crossbar', 'websockets'],
     install_requires=[],
     classifiers=[],
 )
