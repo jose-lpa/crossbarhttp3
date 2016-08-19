@@ -20,5 +20,19 @@ setup(
     url='https://github.com/thehq/python-crossbarhttp',
     keywords=['wamp', 'crossbar', 'websockets'],
     install_requires=[],
-    classifiers=[],
+    tests_require=[
+        'autobahn',
+        'twisted'
+    ],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: Unix',
+        'Operating System :: MacOS',
+        'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Utilities',
+    ],
 )
