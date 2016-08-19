@@ -1,4 +1,9 @@
+# Development
+.coverage
+.DS_Store
 .idea
 *.pyc
-.DS_Store
-.coverage
+
+# Package building
+crossbarhttp.egg-info/
+.eggs
