@@ -6,7 +6,7 @@ import json
 import logging
 from random import randint
 
-from .compat import HTTPError, Request, urlencode, URLError, urlopen
+from .compat import HTTPError, Request, send_request, urlencode, URLError
 
 logger = logging.getLogger('crossbarhttp')
 
@@ -63,22 +63,22 @@ class ClientCallRuntimeError(ClientBaseException):
 
 class Client(object):
 
-    def __init__(self, url, key=None, secret=None, verbose=False):
+    def __init__(self, url, key=None, secret=None, timeout=1):
         """
         Creates a client to connect to the HTTP bridge services.
 
         :param url: The URL to connect to to access the Crossbar.
         :param key: The key for the API calls.
         :param secret: The secret for the API calls.
-        :param verbose: True if you want debug messages printed.
+        :param timeout: Time to wait for the connection.
         """
         assert url is not None
 
         self.url = url
         self.key = key
         self.secret = secret
-        self.verbose = verbose
         self.sequence = 1
+        self.timeout = timeout
 
     def publish(self, topic, *args, **kwargs):
         """
@@ -196,10 +196,9 @@ class Client(object):
         try:
             request = Request(url, encoded_params, headers)
             request.get_method = lambda: method
-            response = urlopen(request).read()
+            response = send_request(request, self.timeout)
             logger.debug('Response: %s', response)
-
-            return json.loads(response)
+            return response
 
         except HTTPError as e:
             if e.code == 400:
