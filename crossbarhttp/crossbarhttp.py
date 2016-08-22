@@ -142,11 +142,10 @@ class Client(object):
         Reference code is at:
         https://github.com/crossbario/crossbar/blob/master/crossbar/adapter/rest/common.py
 
-        :return: (signature, none, timestamp)
+        :return: (signature, nonce, timestamp)
         """
-
-        timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        nonce = randint(0, 2**53)
+        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        nonce = randint(0, 2 ** 53)
 
         # Compute signature: HMAC[SHA256]_{secret} (key | timestamp | seq | nonce | body) => signature
         hm = hmac.new(self.secret, None, hashlib.sha256)
@@ -166,7 +165,7 @@ class Client(object):
         :param method: HTTP Method
         :param url:  The URL
         :param json_params: The parameters intended to be JSON serialized
-        :return:
+        :return: JSON response.
         """
         logger.debug('Request: %s %s', method, url)
 
