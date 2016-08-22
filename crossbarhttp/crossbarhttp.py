@@ -3,9 +3,12 @@ import datetime
 import hashlib
 import hmac
 import json
+import logging
 from random import randint
 
 from .compat import HTTPError, Request, urlencode, URLError, urlopen
+
+logger = logging.getLogger('crossbarhttp')
 
 
 class ClientBaseException(Exception):
@@ -165,18 +168,15 @@ class Client(object):
         :param json_params: The parameters intended to be JSON serialized
         :return:
         """
-        if self.verbose is True:
-            print("\ncrossbarhttp: Request: %s %s" % (method, url))
+        logger.debug('Request: %s %s', method, url)
 
         if json_params is not None:
             encoded_params = json.dumps(json_params)
             headers = {'Content-Type': 'application/json'}
+            logger.debug('Params: %s', encoded_params)
         else:
             encoded_params = None
             headers = {}
-
-        if encoded_params is not None and self.verbose is True:
-            print("crossbarhttp: Params: " + encoded_params)
 
         if self.key and self.secret and encoded_params:
             signature, nonce, timestamp = self._compute_signature(encoded_params)
@@ -187,10 +187,9 @@ class Client(object):
                 "signature": signature,
                 "key": self.key
             })
-            if self.verbose is True:
-                print("crossbarhttp: Signature Params: " + params)
+            logger.debug('Signature Params: %s', params)
 
-            url += "?" + params
+            url = '{0}?{1}'.format(url, params)
 
         self.sequence += 1
 
@@ -198,8 +197,7 @@ class Client(object):
             request = Request(url, encoded_params, headers)
             request.get_method = lambda: method
             response = urlopen(request).read()
-            if self.verbose is True:
-                print("crossbarhttp: Response: " + response)
+            logger.debug('Response: %s', response)
 
             return json.loads(response)
 
