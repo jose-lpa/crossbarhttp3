@@ -6,7 +6,9 @@ import json
 import logging
 from random import randint
 
-from .compat import HTTPError, Request, send_request, urlencode, URLError
+from .compat import (
+    HTTPError, Request, send_request, urlencode, URLError, urlparse
+)
 
 logger = logging.getLogger('crossbarhttp')
 
@@ -72,7 +74,12 @@ class Client(object):
         :param secret: The secret for the API calls.
         :param timeout: Time to wait for the connection.
         """
-        assert url is not None
+        # URL sanity check.
+        try:
+            parsed = urlparse(url)
+            assert parsed.scheme and parsed.netloc
+        except (AssertionError, AttributeError):
+            raise ClientBadUrl('Invalid Crossbar node URL')
 
         self.url = url
         self.key = key

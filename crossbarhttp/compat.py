@@ -13,7 +13,7 @@ except ImportError:
 # Compatibility workaround for `urllib`.
 if sys.version_info >=(3,):
     # Python 3
-    from urllib.parse import urlencode
+    from urllib.parse import urlencode, urlparse
     from urllib.request import HTTPError, Request, URLError, urlopen
 
     def send_request(request, timeout):
@@ -32,6 +32,7 @@ else:
     # Python 2
     from urllib import urlencode
     from urllib2 import HTTPError, Request, URLError, urlopen
+    from urlparse import urlparse
 
     def send_request(request, timeout):
         """
