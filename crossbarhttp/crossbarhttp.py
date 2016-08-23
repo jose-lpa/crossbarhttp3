@@ -67,7 +67,7 @@ class ClientCallRuntimeError(ClientBaseException):
 
 class Client(object):
 
-    def __init__(self, url, key=None, secret=None, timeout=1):
+    def __init__(self, url, key=None, secret=None, timeout=1, silently=False):
         """
         Creates a client to connect to the HTTP bridge services.
 
@@ -75,6 +75,8 @@ class Client(object):
         :param key: The key for the API calls.
         :param secret: The secret for the API calls.
         :param timeout: Time to wait for the connection.
+        :param silently: Whether the client should raise an exception or not if
+        the request fails. Defaults to raise exceptions on request failure.
         """
         # URL sanity check.
         try:
@@ -88,6 +90,7 @@ class Client(object):
         self.secret = secret
         self.sequence = 1
         self.timeout = timeout
+        self.silently = silently
 
     def publish(self, topic, *args, **kwargs):
         """
@@ -96,7 +99,9 @@ class Client(object):
         :param topic: The topic to publish to.
         :param args: The arguments.
         :param kwargs: The key/word arguments.
-        :return: The ID of the publish.
+        :return: The ID of the publish. In case the request failed, it returns
+        ``None`` if ``self.silently`` is ``True``; otherwise it raises the
+        exception.
         """
         assert topic is not None
 
@@ -106,8 +111,20 @@ class Client(object):
             "kwargs": kwargs
         }
 
-        response = self._make_api_call("POST", self.url, json_params=params)
-        return response["id"]
+        try:
+            response = self._make_api_call("POST", self.url, json_params=params)
+            return response["id"]
+        except (
+            ClientBadHost,
+            ClientBadUrl,
+            ClientMissingParams,
+            ClientSignatureError
+        ):
+            logger.exception("Couldn't publish message: %r", params)
+            if self.silently is True:
+                return None
+            else:
+                raise
 
     def call(self, procedure, *args, **kwargs):
         """
