@@ -100,12 +100,6 @@ class CrossbarHttpTests(unittest.TestCase):
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
-    def test_verbose(self):
-        client = Client(self.__class__.url + "/call-signature",
-                                     key="key", secret="secret", verbose=True)
-        result = client.call("test.add", 2, 3, offset=10)
-        self.assertEqual(result, 15)
-
     def test_invalid_call_params(self):
         client = Client(self.__class__.url + "/call-signature",
                                      key="key", secret="secret")
