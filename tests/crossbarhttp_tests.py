@@ -69,15 +69,19 @@ class CrossbarHttpTests(unittest.TestCase):
             client.call("test.add", 2, 3, offset=10)
 
     def test_call_bad_signature(self):
-        client = Client(self.__class__.url + "/call-signature",
-                                     key="key", secret="bad secret")
+        client = Client(
+            self.__class__.url + "/call-signature",
+            key="key", secret="bad secret"
+        )
 
         with self.assertRaises(ClientSignatureError):
             client.call("test.add", 2, 3, offset=10)
 
     def test_call_signature(self):
-        client = Client(self.__class__.url + "/call-signature",
-                                     key="key", secret="secret")
+        client = Client(
+            self.__class__.url + "/call-signature",
+            key="key", secret="secret"
+        )
         result = client.call("test.add", 2, 3, offset=10)
         self.assertEqual(result, 15)
 
@@ -88,21 +92,27 @@ class CrossbarHttpTests(unittest.TestCase):
             client.publish("test.publish", 4, 7, event="new event")
 
     def test_publish_bad_signature(self):
-        client = Client(self.__class__.url + "/publish-signature",
-                                     key="key", secret="bad secret")
+        client = Client(
+            self.__class__.url + "/publish-signature",
+            key="key", secret="bad secret"
+        )
 
         with self.assertRaises(ClientSignatureError):
             client.publish("test.publish", 4, 7, event="new event")
 
     def test_publish_signature(self):
-        client = Client(self.__class__.url + "/publish-signature",
-                                     key="key", secret="secret")
+        client = Client(
+            self.__class__.url + "/publish-signature",
+            key="key", secret="secret"
+        )
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
     def test_invalid_call_params(self):
-        client = Client(self.__class__.url + "/call-signature",
-                                     key="key", secret="secret")
+        client = Client(
+            self.__class__.url + "/call-signature",
+            key="key", secret="secret"
+        )
 
         client._make_api_call = mock.MagicMock(return_value="{}")
 
@@ -123,7 +133,7 @@ class CrossbarHttpTests(unittest.TestCase):
 
 class TestClient(unittest.TestCase):
     def setUp(self):
-        self.crossbar_client = Client('http://localhost')
+        self.crossbar_client = Client('http://localhost:8080')
 
     def test_client_instantiation_wrong_url(self):
         """
