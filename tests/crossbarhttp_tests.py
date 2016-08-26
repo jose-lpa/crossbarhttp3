@@ -165,13 +165,15 @@ class TestClient(unittest.TestCase):
     @mock.patch('crossbarhttp.Client._make_api_call')
     def test_publish_request_failed_bad_host(self, api_call_mock):
         """
-        Client must pass silently by default if the request to HTTP bridge fails
-        due to a ``ClientBadHost`` exception.
+        Client must pass silently if the request to HTTP bridge fails due to a
+        ``ClientBadHost`` exception and it is configured as ``silently=True``.
         """
         # Artificially raise the ``ClientBadHost`` exception.
         api_call_mock.side_effect = ClientBadHost
+
+        crossbar_client = Client('http://localhost:8080', silently=True)
         self.assertEqual(
-            self.crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8080', 1234),
             None
         )
 
@@ -179,29 +181,29 @@ class TestClient(unittest.TestCase):
     def test_publish_request_failed_bad_host_noisy(self, api_call_mock):
         """
         Client must raise the exception if the request to HTTP bridge fails due
-        to a ``ClientBadHost`` exception and it is configured as
-        ``silently=False``.
+        to a ``ClientBadHost`` exception.
         """
         # Artificially raise the ``ClientBadHost`` exception.
         api_call_mock.side_effect = ClientBadHost
 
-        client = Client('http://localhost', silently=False)
         self.assertRaises(
             ClientBadHost,
-            client.publish,
+            self.crossbar_client.publish,
             'http://localhost:8080', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
     def test_publish_request_failed_bad_url(self, api_call_mock):
         """
-        Client must pass silently by default if the request to HTTP bridge fails
-        due to a ``ClientBadUrl`` exception.
+        Client must pass silently if the request to HTTP bridge fails due to a
+        ``ClientBadUrl`` exception and it is configured as ``silently=True``.
         """
         # Artificially raise the ``ClientBadUrl`` exception.
         api_call_mock.side_effect = ClientBadUrl
+
+        crossbar_client = Client('http://localhost:8080', silently=True)
         self.assertEqual(
-            self.crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8080', 1234),
             None
         )
 
@@ -209,29 +211,30 @@ class TestClient(unittest.TestCase):
     def test_publish_request_failed_bad_url_noisy(self, api_call_mock):
         """
         Client must raise the exception if the request to HTTP bridge fails due
-        to a ``ClientBadUrl`` exception and it is configured as
-        ``silently=False``.
+        to a ``ClientBadUrl`` exception.
         """
         # Artificially raise the ``ClientBadUrl`` exception.
         api_call_mock.side_effect = ClientBadUrl
 
-        client = Client('http://localhost', silently=False)
         self.assertRaises(
             ClientBadUrl,
-            client.publish,
+            self.crossbar_client.publish,
             'http://localhost:8080', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
     def test_publish_request_failed_missing_params(self, api_call_mock):
         """
-        Client must pass silently by default if the request to HTTP bridge fails
-        due to a ``ClientMissingParams`` exception.
+        Client must pass silently if the request to HTTP bridge fails due to a
+        ``ClientMissingParams`` exception and it is configured as
+        ``silently=True``.
         """
         # Artificially raise the ``ClientMissingParams`` exception.
         api_call_mock.side_effect = ClientMissingParams
+
+        crossbar_client = Client('http://localhost:8080', silently=True)
         self.assertEqual(
-            self.crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8080', 1234),
             None
         )
 
@@ -239,29 +242,30 @@ class TestClient(unittest.TestCase):
     def test_publish_request_failed_missing_params_noisy(self, api_call_mock):
         """
         Client must raise the exception if the request to HTTP bridge fails due
-        to a ``ClientMissingParams`` exception and it is configured as
-        ``silently=False``.
+        to a ``ClientMissingParams`` exception.
         """
         # Artificially raise the ``ClientMissingParams`` exception.
         api_call_mock.side_effect = ClientMissingParams
 
-        client = Client('http://localhost', silently=False)
         self.assertRaises(
             ClientMissingParams,
-            client.publish,
+            self.crossbar_client.publish,
             'http://localhost:8080', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
     def test_publish_request_failed_signature_error(self, api_call_mock):
         """
-        Client must pass silently by default if the request to HTTP bridge fails
-        due to a ``ClientSignatureError`` exception.
+        Client must pass silently if the request to HTTP bridge fails due to a
+        ``ClientSignatureError`` exception and it is configured as
+        ``silently=True``.
         """
         # Artificially raise the ``ClientSignatureError`` exception.
         api_call_mock.side_effect = ClientSignatureError
+
+        crossbar_client = Client('http://localhost:8080', silently=True)
         self.assertEqual(
-            self.crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8080', 1234),
             None
         )
 
@@ -269,16 +273,14 @@ class TestClient(unittest.TestCase):
     def test_publish_request_failed_signature_error_noisy(self, api_call_mock):
         """
         Client must raise the exception if the request to HTTP bridge fails due
-        to a ``ClientSignatureError`` exception and it is configured as
-        ``silently=False``.
+        to a ``ClientSignatureError`` exception.
         """
         # Artificially raise the ``ClientSignatureError`` exception.
         api_call_mock.side_effect = ClientSignatureError
 
-        client = Client('http://localhost', silently=False)
         self.assertRaises(
             ClientSignatureError,
-            client.publish,
+            self.crossbar_client.publish,
             'http://localhost:8080', 1234
         )
 
