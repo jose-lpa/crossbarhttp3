@@ -13,15 +13,16 @@ except ImportError:
 
 
 # Compatibility workaround for `urllib`.
-if sys.version_info >=(3,):
+if sys.version_info >= (3,):
     # Python 3
+    from http.client import HTTPException
     from urllib.parse import urlencode, urlparse
     from urllib.request import HTTPError, Request, URLError, urlopen
 
     def send_request(request, timeout):
         """
-        Performs a request to the Crossbar.io node, enabling the Python3 timeout
-        feature.
+        Performs a request to the Crossbar.io node, enabling the Python3
+        timeout feature.
 
         :param request: The ``urllib.request.Request`` object to be sent.
         :param timeout: The timeout in seconds, passed from the ``Client``.
@@ -32,6 +33,7 @@ if sys.version_info >=(3,):
         return json.loads(str(response, 'utf-8'))
 else:
     # Python 2
+    from httplib import HTTPException
     from urllib import urlencode
     from urllib2 import HTTPError, Request, URLError, urlopen
     from urlparse import urlparse

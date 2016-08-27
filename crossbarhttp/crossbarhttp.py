@@ -9,7 +9,8 @@ import logging
 from random import randint
 
 from .compat import (
-    HTTPError, Request, send_request, urlencode, URLError, urlparse
+    HTTPError, HTTPException, Request, send_request, urlencode, URLError,
+    urlparse
 )
 
 logger = logging.getLogger('crossbarhttp')
@@ -118,7 +119,8 @@ class Client(object):
             ClientBadHost,
             ClientBadUrl,
             ClientMissingParams,
-            ClientSignatureError
+            ClientSignatureError,
+            HTTPException
         ):
             logger.exception("Couldn't publish message: %r", params)
             if self.silently is True:
@@ -170,7 +172,7 @@ class Client(object):
 
         :return: (signature, nonce, timestamp)
         """
-        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        timestamp = datetime.datetime.utcnow().isoformat() + 'Z'
         nonce = randint(0, 2 ** 53)
 
         # Compute signature: HMAC[SHA256]_{secret} (key | timestamp | seq | nonce | body) => signature
@@ -199,9 +201,11 @@ class Client(object):
             encoded_params = json.dumps(json_params)
             headers = {'Content-Type': 'application/json'}
             logger.debug('Params: %s', encoded_params)
+            byte_encoded_params = bytearray(encoded_params, 'utf-8')
         else:
             encoded_params = None
             headers = {}
+            byte_encoded_params = None
 
         if self.key and self.secret and encoded_params:
             signature, nonce, timestamp = self._compute_signature(encoded_params)
@@ -219,7 +223,7 @@ class Client(object):
         self.sequence += 1
 
         try:
-            request = Request(url, encoded_params, headers)
+            request = Request(url, byte_encoded_params, headers)
             request.get_method = lambda: method
             response = send_request(request, self.timeout)
             logger.debug('Response: %s', response)
