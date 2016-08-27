@@ -352,7 +352,7 @@ class TestClient(unittest.TestCase):
         )
 
     @mock.patch('crossbarhttp.compat.urlopen')
-    @mock.patch('crossbarhttp.compat.Request')
+    @mock.patch('crossbarhttp.crossbarhttp.Request')
     def test_make_api_call_with_json_params(self, request_mock, urlopen_mock):
         """
         Tests ``Request.data`` composition when the method is called with some
@@ -382,7 +382,7 @@ class TestClient(unittest.TestCase):
         )
 
     @mock.patch('crossbarhttp.compat.urlopen')
-    @mock.patch('crossbarhttp.compat.Request')
+    @mock.patch('crossbarhttp.crossbarhttp.Request')
     def test_make_api_call_json_params_none(self, request_mock, urlopen_mock):
         """
         Tests ``Request`` instantiation when the method is called with
