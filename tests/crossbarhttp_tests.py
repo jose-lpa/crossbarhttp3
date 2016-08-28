@@ -11,7 +11,7 @@ from crossbarhttp import (
     ClientSignatureError,
     Client
 )
-from crossbarhttp.compat import HTTPError, mock
+from crossbarhttp.compat import HTTPError, HTTPException, mock
 
 
 class CrossbarHttpTests(unittest.TestCase):
@@ -284,6 +284,36 @@ class TestClient(unittest.TestCase):
 
         self.assertRaises(
             ClientSignatureError,
+            self.crossbar_client.publish,
+            'http://localhost:8080', 1234
+        )
+
+    @mock.patch('crossbarhttp.Client._make_api_call')
+    def test_publish_request_failed_http_exception(self, api_call_mock):
+        """
+        Client must pass silently if the request to HTTP bridge fails due to a
+        ``HTTPException`` exception and it is configured as ``silently=True``.
+        """
+        # Artificially raise the ``HTTPException`` exception.
+        api_call_mock.side_effect = HTTPException
+
+        crossbar_client = Client('http://localhost:8080', silently=True)
+        self.assertEqual(
+            crossbar_client.publish('http://localhost:8080', 1234),
+            None
+        )
+
+    @mock.patch('crossbarhttp.Client._make_api_call')
+    def test_publish_request_failed_http_exception_noisy(self, api_call_mock):
+        """
+        Client must raise the exception if the request to HTTP bridge fails due
+        to a ``HTTPException`` exception.
+        """
+        # Artificially raise the ``HTTPException`` exception.
+        api_call_mock.side_effect = HTTPException
+
+        self.assertRaises(
+            HTTPException,
             self.crossbar_client.publish,
             'http://localhost:8080', 1234
         )
