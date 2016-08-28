@@ -22,16 +22,18 @@ Module that provides methods for accessing Crossbar.io HTTP Bridge Services
 Revision History
 ================
 
-  - v0.1.2:
-    - Added "ClientCallRuntimeError" exception for general errors
-  - v0.1.1:
+- v0.1.2:
+    - Added ``ClientCallRuntimeError`` exception for general errors
+- v0.1.1:
     - Added class defined Exceptions for specific events
     - Added key/secret handling
-  - v0.1:
+- v0.1:
     - Initial version
 
 Installation
 ============
+
+Install Crossbar HTTP with pip::
 
     pip install crossbarhttp
 
@@ -98,12 +100,12 @@ The library will throw the following exceptions.  Note that all exceptions
 subclass from ``ClientBaseException`` so you can just catch that if you don't
 want the granularity.
 
-  - ``ClientBadUrl`` - The specified URL is not a HTTP bridge service
-  - ``ClientBadHost`` - The specified host name is rejecting the connection
-  - ``ClientMissingParams`` - The call was missing parameters
-  - ``ClientSignatureError`` - The signature did not match
-  - ``ClientNoCalleeRegistered`` - Callee was not registered on the router for the specified procedure
-  - ``ClientCallRuntimeError`` - Procedure triggered an exception
+- ``ClientBadUrl`` - The specified URL is not a HTTP bridge service
+- ``ClientBadHost`` - The specified host name is rejecting the connection
+- ``ClientMissingParams`` - The call was missing parameters
+- ``ClientSignatureError`` - The signature did not match
+- ``ClientNoCalleeRegistered`` - Callee was not registered on the router for the specified procedure
+- ``ClientCallRuntimeError`` - Procedure triggered an exception
 
 Contributing
 ============
@@ -122,7 +124,7 @@ type::
 The Docker Compose file creates a generic router with an example service
 connected to it and runs the tests.
     
-The service ``crossbarhttp_test_`` will return a 0 value if the tests were
+The service ``crossbarhttp_test_1`` will return a 0 value if the tests were
 successful and non zero otherwise. To get the pass/fail results from a command
 line, do the following:
 
