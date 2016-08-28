@@ -3,10 +3,19 @@
 
 from __future__ import unicode_literals
 
+import sys
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
+
+
+# Define requirements per Python version.
+if sys.version_info >= (3,):
+    requirements = []
+else:
+    requirements = ['future']
 
 
 setup(
@@ -19,7 +28,7 @@ setup(
     author_email='eric@thehq.io',
     url='https://github.com/thehq/python-crossbarhttp',
     keywords=['wamp', 'crossbar', 'websockets'],
-    install_requires=[],
+    install_requires=requirements,
     test_suite='tests',
     tests_require=[
         'autobahn',
