@@ -2,15 +2,13 @@ from __future__ import unicode_literals
 
 import base64
 import datetime
-import hashlib
-import hmac
 import json
 import logging
 from random import randint
 
 from .compat import (
-    HTTPError, HTTPException, Request, send_request, urlencode, URLError,
-    urlparse
+    compute_hmac, HTTPError, HTTPException, Request, send_request, urlencode,
+    URLError, urlparse
 )
 
 logger = logging.getLogger('crossbarhttp')
@@ -85,6 +83,11 @@ class Client(object):
             assert parsed.scheme and parsed.netloc
         except (AssertionError, AttributeError):
             raise ClientBadUrl('Invalid Crossbar node URL')
+
+        if key is None:
+            key = ''
+        if secret is None:
+            secret = ''
 
         self.url = url
         self.key = key
@@ -175,13 +178,14 @@ class Client(object):
         timestamp = datetime.datetime.utcnow().isoformat() + 'Z'
         nonce = randint(0, 2 ** 53)
 
-        # Compute signature: HMAC[SHA256]_{secret} (key | timestamp | seq | nonce | body) => signature
-        hm = hmac.new(self.secret, None, hashlib.sha256)
-        hm.update(self.key)
-        hm.update(timestamp)
-        hm.update(str(self.sequence))
-        hm.update(str(nonce))
-        hm.update(body)
+        hm = compute_hmac(
+            body=body,
+            key=self.key,
+            secret=self.secret,
+            sequence=self.sequence,
+            nonce=nonce,
+            timestamp=timestamp
+        )
         signature = base64.urlsafe_b64encode(hm.digest())
 
         return signature, nonce, timestamp
