@@ -3,7 +3,8 @@ MAINTAINER Eric Chapman <eric@thehq.io>
 
 RUN pip install \
     coverage \
-    mock
+    mock \
+    future
 
 COPY crossbarhttp/ /home/ubuntu/python-crossbarhttp/crossbarhttp
 COPY tests/*.py /home/ubuntu/python-crossbarhttp/
