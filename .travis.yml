@@ -1,0 +1,21 @@
+language: python
+python:
+    - "3.5"
+
+services:
+    - docker
+
+install:
+    - pip install codecov tox
+
+script:
+    - tox --
+
+after_success:
+    - codecov
+
+env:
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=py34
+    - TOXENV=py35
