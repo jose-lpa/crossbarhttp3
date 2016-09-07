@@ -25,8 +25,11 @@ if sys.version_info >= (3,):
         """
         Performs the HMAC computation for signed requests, Python 3 compatible.
         """
-        hm = hmac.new(secret, None, hashlib.sha256)
-        hm.update(key)
+        sequence = str(sequence)
+        nonce = str(nonce)
+
+        hm = hmac.new(bytes(secret, 'utf-8'), None, hashlib.sha256)
+        hm.update(bytes(key, 'utf-8'))
         hm.update(bytes(timestamp, 'utf-8'))
         hm.update(bytes(sequence, 'utf-8'))
         hm.update(bytes(nonce, 'utf-8'))
