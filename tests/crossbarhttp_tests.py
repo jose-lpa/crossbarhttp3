@@ -458,7 +458,3 @@ class TestClient(unittest.TestCase):
 
         # `Request` object is instantiated with this `data`:
         request_mock.assert_called_with(self.crossbar_client.url, None, {})
-
-
-if __name__ == '__main__':
-    unittest.main()

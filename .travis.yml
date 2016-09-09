@@ -8,7 +8,7 @@ services:
     - docker
 
 before_install:
-    - docker pull joselpa/crossbar-http-bridge
+    - docker pull joselpa/crossbar-http-bridge:0.1
     - docker run -d -p 8001:8001 joselpa/crossbar-http-bridge:0.1
 
 install:
