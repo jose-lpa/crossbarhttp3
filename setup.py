@@ -14,17 +14,10 @@ except ImportError:
 # Define requirements per Python version.
 if sys.version_info >= (3,):
     requirements = []
-    test_requirements = [
-        'autobahn',
-        'twisted'
-    ]
+    test_requirements = []
 else:
     requirements = ['future']
-    test_requirements = [
-        'autobahn',
-        'mock',
-        'twisted'
-    ]
+    test_requirements = ['mock']
 
 
 setup(
@@ -39,7 +32,6 @@ setup(
     keywords=['wamp', 'crossbar.io', 'websockets'],
     install_requires=requirements,
     test_suite='tests',
-    tests_require=test_requirements,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
