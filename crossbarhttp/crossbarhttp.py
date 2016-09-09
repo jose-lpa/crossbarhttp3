@@ -66,14 +66,14 @@ class ClientCallRuntimeError(ClientBaseException):
 
 class Client(object):
 
-    def __init__(self, url, key=None, secret=None, timeout=1, silently=False):
+    def __init__(self, url, key=None, secret=None, timeout=None, silently=False):
         """
         Creates a client to connect to the HTTP bridge services.
 
         :param url: The URL to connect to to access the Crossbar.
         :param key: The key for the API calls.
         :param secret: The secret for the API calls.
-        :param timeout: Time to wait for the connection.
+        :param timeout: Time to wait for the connection, in seconds.
         :param silently: Whether the client should raise an exception or not if
         the request fails. Defaults to raise exceptions on request failure.
         """

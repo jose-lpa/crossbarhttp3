@@ -43,10 +43,14 @@ if sys.version_info >= (3,):
         timeout feature.
 
         :param request: The ``urllib.request.Request`` object to be sent.
-        :param timeout: The timeout in seconds, passed from the ``Client``.
+        :param timeout: The timeout in seconds, passed from the ``Client``. If
+        not specified, the global default timeout will be used.
         :return: The response data in a JSON payload.
         """
-        response = urlopen(request, timeout=timeout).read()
+        if timeout is None:
+            response = urlopen(request).read()
+        else:
+            response = urlopen(request, timeout=timeout).read()
 
         return json.loads(str(response, 'utf-8'))
 else:
