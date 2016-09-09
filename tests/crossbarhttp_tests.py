@@ -1,5 +1,5 @@
 import json
-import os
+import sys
 import unittest
 
 from crossbarhttp import (
@@ -15,63 +15,64 @@ from crossbarhttp.compat import HTTPError, HTTPException, mock
 
 
 class CrossbarHttpTests(unittest.TestCase):
-
-    url = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.url = os.getenv('ROUTER_URL', "http://localhost:8080")
+    def setUp(self):
+        self.url = 'http://localhost:8001'
 
     def test_call(self):
-        client = Client(self.__class__.url + "/call")
+        client = Client(self.url + "/call", timeout=20)
         result = client.call("test.add", 2, 3, offset=10)
         self.assertEqual(result, 15)
 
     def test_publish(self):
-        client = Client(self.__class__.url + "/publish")
+        client = Client(self.url + "/publish", timeout=20)
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
+    @unittest.skipIf(
+        sys.version_info >= (3,),
+        'Python 3 timeout functionality overrides this exception raising'
+    )
     def test_call_no_callee(self):
-        client = Client(self.__class__.url + "/call")
+        client = Client(self.url + "/call", timeout=20)
 
         with self.assertRaises(ClientNoCalleeRegistered):
             client.call("test.does_not_exist", 2, 3, offset=10)
 
     def test_call_bad_url(self):
-        client = Client(self.__class__.url + "/call_bad_url")
+        client = Client(self.url + "/call_bad_url", timeout=20)
 
         with self.assertRaises(ClientBadUrl):
             client.call("test.add", 2, 3, offset=10)
 
     def test_publish_bad_url(self):
-        client = Client(self.__class__.url + "/publish_bad_url")
+        client = Client(self.url + "/publish_bad_url", timeout=20)
 
         with self.assertRaises(ClientBadUrl):
             client.publish("test.publish", 4, 7, event="new event")
 
     def test_call_bad_host(self):
-        client = Client("http://bad:8080/call")
+        client = Client("http://bad:8001/call", timeout=20)
 
         with self.assertRaises(ClientBadHost):
             client.call("test.add", 2, 3, offset=10)
 
     def test_publish_bad_host(self):
-        client = Client("http://bad:8080/publish")
+        client = Client("http://bad:8001/publish", timeout=20)
 
         with self.assertRaises(ClientBadHost):
             client.publish("test.publish", 4, 7, event="new event")
 
     def test_call_missing_signature_params(self):
-        client = Client(self.__class__.url + "/call-signature")
+        client = Client(self.url + "/call-signature", timeout=20)
 
         with self.assertRaises(ClientMissingParams):
             client.call("test.add", 2, 3, offset=10)
 
     def test_call_bad_signature(self):
         client = Client(
-            self.__class__.url + "/call-signature",
-            key="key", secret="bad secret"
+            self.url + "/call-signature",
+            key="key", secret="bad secret",
+            timeout=20
         )
 
         with self.assertRaises(ClientSignatureError):
@@ -79,22 +80,24 @@ class CrossbarHttpTests(unittest.TestCase):
 
     def test_call_signature(self):
         client = Client(
-            self.__class__.url + "/call-signature",
-            key="key", secret="secret"
+            self.url + "/call-signature",
+            key="key", secret="secret",
+            timeout=20
         )
         result = client.call("test.add", 2, 3, offset=10)
         self.assertEqual(result, 15)
 
     def test_publish_missing_signature_params(self):
-        client = Client(self.__class__.url + "/publish-signature")
+        client = Client(self.url + "/publish-signed", timeout=20)
 
         with self.assertRaises(ClientMissingParams):
             client.publish("test.publish", 4, 7, event="new event")
 
     def test_publish_bad_signature(self):
         client = Client(
-            self.__class__.url + "/publish-signature",
-            key="key", secret="bad secret"
+            self.url + "/publish-signed",
+            key="key", secret="bad secret",
+            timeout=20
         )
 
         with self.assertRaises(ClientSignatureError):
@@ -102,16 +105,18 @@ class CrossbarHttpTests(unittest.TestCase):
 
     def test_publish_signature(self):
         client = Client(
-            self.__class__.url + "/publish-signature",
-            key="key", secret="secret"
+            self.url + "/publish-signed",
+            key="key", secret="secret",
+            timeout=20
         )
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
     def test_invalid_call_params(self):
         client = Client(
-            self.__class__.url + "/call-signature",
-            key="key", secret="secret"
+            self.url + "/call-signature",
+            key="key", secret="secret",
+            timeout=20
         )
 
         client._make_api_call = mock.MagicMock(return_value="{}")
@@ -120,20 +125,24 @@ class CrossbarHttpTests(unittest.TestCase):
         self.assertEqual(result, None)
 
     def test_no_call_params(self):
-        client = Client(self.__class__.url + "/call")
+        client = Client(self.url + "/call", timeout=20)
 
         with self.assertRaises(ClientMissingParams):
             client._make_api_call("POST", client.url)
 
+    @unittest.skipIf(
+        sys.version_info >= (3,),
+        'Python 3 timeout functionality overrides this exception raising'
+    )
     def test_call_exception(self):
-        client = Client(self.__class__.url + "/call")
+        client = Client(self.url + "/call", timeout=20)
         with self.assertRaises(ClientCallRuntimeError):
             client.call("test.exception")
 
 
 class TestClient(unittest.TestCase):
     def setUp(self):
-        self.crossbar_client = Client('http://localhost:8080')
+        self.crossbar_client = Client('http://localhost:8001', timeout=20)
 
     def test_client_instantiation_wrong_url(self):
         """
@@ -162,7 +171,7 @@ class TestClient(unittest.TestCase):
 
         # Just send a useless 4 digits number as a message, 1234.
         self.assertEqual(
-            self.crossbar_client.publish('http://localhost:8080', 1234),
+            self.crossbar_client.publish('http://localhost:8001', 1234),
             4354231544065071
         )
 
@@ -175,9 +184,13 @@ class TestClient(unittest.TestCase):
         # Artificially raise the ``ClientBadHost`` exception.
         api_call_mock.side_effect = ClientBadHost
 
-        crossbar_client = Client('http://localhost:8080', silently=True)
+        crossbar_client = Client(
+            'http://localhost:8001',
+            timeout=20,
+            silently=True
+        )
         self.assertEqual(
-            crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8001', 1234),
             None
         )
 
@@ -193,7 +206,7 @@ class TestClient(unittest.TestCase):
         self.assertRaises(
             ClientBadHost,
             self.crossbar_client.publish,
-            'http://localhost:8080', 1234
+            'http://localhost:8001', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
@@ -205,9 +218,13 @@ class TestClient(unittest.TestCase):
         # Artificially raise the ``ClientBadUrl`` exception.
         api_call_mock.side_effect = ClientBadUrl
 
-        crossbar_client = Client('http://localhost:8080', silently=True)
+        crossbar_client = Client(
+            'http://localhost:8001',
+            timeout=20,
+            silently=True
+        )
         self.assertEqual(
-            crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8001', 1234),
             None
         )
 
@@ -223,7 +240,7 @@ class TestClient(unittest.TestCase):
         self.assertRaises(
             ClientBadUrl,
             self.crossbar_client.publish,
-            'http://localhost:8080', 1234
+            'http://localhost:8001', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
@@ -236,9 +253,13 @@ class TestClient(unittest.TestCase):
         # Artificially raise the ``ClientMissingParams`` exception.
         api_call_mock.side_effect = ClientMissingParams
 
-        crossbar_client = Client('http://localhost:8080', silently=True)
+        crossbar_client = Client(
+            'http://localhost:8001',
+            timeout=20,
+            silently=True
+        )
         self.assertEqual(
-            crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8001', 1234),
             None
         )
 
@@ -254,7 +275,7 @@ class TestClient(unittest.TestCase):
         self.assertRaises(
             ClientMissingParams,
             self.crossbar_client.publish,
-            'http://localhost:8080', 1234
+            'http://localhost:8001', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
@@ -267,9 +288,13 @@ class TestClient(unittest.TestCase):
         # Artificially raise the ``ClientSignatureError`` exception.
         api_call_mock.side_effect = ClientSignatureError
 
-        crossbar_client = Client('http://localhost:8080', silently=True)
+        crossbar_client = Client(
+            'http://localhost:8001',
+            timeout=20,
+            silently=True
+        )
         self.assertEqual(
-            crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8001', 1234),
             None
         )
 
@@ -285,7 +310,7 @@ class TestClient(unittest.TestCase):
         self.assertRaises(
             ClientSignatureError,
             self.crossbar_client.publish,
-            'http://localhost:8080', 1234
+            'http://localhost:8001', 1234
         )
 
     @mock.patch('crossbarhttp.Client._make_api_call')
@@ -297,9 +322,13 @@ class TestClient(unittest.TestCase):
         # Artificially raise the ``HTTPException`` exception.
         api_call_mock.side_effect = HTTPException
 
-        crossbar_client = Client('http://localhost:8080', silently=True)
+        crossbar_client = Client(
+            'http://localhost:8001',
+            timeout=20,
+            silently=True
+        )
         self.assertEqual(
-            crossbar_client.publish('http://localhost:8080', 1234),
+            crossbar_client.publish('http://localhost:8001', 1234),
             None
         )
 
@@ -315,7 +344,7 @@ class TestClient(unittest.TestCase):
         self.assertRaises(
             HTTPException,
             self.crossbar_client.publish,
-            'http://localhost:8080', 1234
+            'http://localhost:8001', 1234
         )
 
     @mock.patch('crossbarhttp.compat.urlopen')
@@ -392,7 +421,7 @@ class TestClient(unittest.TestCase):
         urlopen_mock().read.return_value = b'{"id":4354231544065071}'
 
         params = {
-            'topic': 'http://localhost:8080',
+            'topic': 'http://localhost:8001',
             'args': [1, 2, 3],
             'kwargs': {'key': 1234}
         }
