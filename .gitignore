@@ -1,7 +1,8 @@
 # Development
 .coverage
 .DS_Store
-.idea
+.idea/
+.tox/
 *.pyc
 
 # Package building
