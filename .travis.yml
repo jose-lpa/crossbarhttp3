@@ -2,8 +2,14 @@ language: python
 python:
     - "3.5"
 
+sudo: required
+
 services:
     - docker
+
+before_install:
+    - docker pull joselpa/crossbar-http-bridge
+    - docker run -d -p 8001:8001 joselpa/crossbar-http-bridge:0.1
 
 install:
     - pip install codecov tox
