@@ -14,17 +14,10 @@ except ImportError:
 # Define requirements per Python version.
 if sys.version_info >= (3,):
     requirements = []
-    test_requirements = [
-        'autobahn',
-        'twisted'
-    ]
+    test_requirements = []
 else:
     requirements = ['future']
-    test_requirements = [
-        'autobahn',
-        'mock',
-        'twisted'
-    ]
+    test_requirements = ['mock']
 
 
 setup(
