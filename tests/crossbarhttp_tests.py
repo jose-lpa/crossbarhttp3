@@ -1,5 +1,4 @@
 import json
-import sys
 import unittest
 
 from crossbarhttp import (
@@ -28,10 +27,6 @@ class CrossbarHttpTests(unittest.TestCase):
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
-    @unittest.skipIf(
-        sys.version_info >= (3,),
-        'Python 3 timeout functionality overrides this exception raising'
-    )
     def test_call_no_callee(self):
         client = Client(self.url + "/call", timeout=20)
 
@@ -130,10 +125,6 @@ class CrossbarHttpTests(unittest.TestCase):
         with self.assertRaises(ClientMissingParams):
             client._make_api_call("POST", client.url)
 
-    @unittest.skipIf(
-        sys.version_info >= (3,),
-        'Python 3 timeout functionality overrides this exception raising'
-    )
     def test_call_exception(self):
         client = Client(self.url + "/call", timeout=20)
         with self.assertRaises(ClientCallRuntimeError):
