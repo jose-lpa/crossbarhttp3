@@ -38,6 +38,8 @@ To call a Crossbar HTTP bridge, do the following:
 
 .. code-block:: python
 
+    from crossbarhttp import Client
+
     client = Client('http://127.0.0.1/call')
     result = client.call('com.example.add', 2, 3, offset=10)
     
@@ -65,6 +67,8 @@ Publish
 To publish to a Crossbar HTTP bridge, do the following:
 
 .. code-block:: python
+
+    from crossbarhttp import Client
 
     client = Client('http://127.0.0.1/publish')
     result = client.publish('com.example.event', event='new event')
@@ -94,6 +98,8 @@ For bridge services that have a key and secret defined, simply include the key
 and secret in the instantiation of the client.
 
 .. code-block:: python
+
+    from crossbarhttp import Client
 
     client = Client('http://127.0.0.1/publish', key='key', secret='secret')
 

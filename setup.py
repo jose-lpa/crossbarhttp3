@@ -21,15 +21,15 @@ else:
 
 
 setup(
-    name='crossbarhttp',
+    name='crossbarhttp3',
     packages=['crossbarhttp'],
-    version='0.1.2',
+    version='1.1',
     description='Library for connecting to Crossbar.io HTTP Bridge Services.',
     author='José Luis Patiño Andrés',
     license='MIT',
     author_email='jose.lpa@gmail.com',
     url='https://github.com/jose-lpa/crossbarhttp3',
-    keywords=['wamp', 'crossbar.io', 'websockets'],
+    keywords=['wamp', 'crossbar.io', 'websockets', 'http-bridge'],
     install_requires=requirements,
     test_suite='tests',
     tests_require=test_requirements,
