@@ -1,6 +1,14 @@
 import json
 import unittest
 
+# Mock facility for unit testing.
+try:
+    # Python 3
+    import unittest.mock as mock
+except ImportError:
+    # Python 2
+    import mock
+
 from crossbarhttp import (
     ClientBadUrl,
     ClientBadHost,
@@ -10,7 +18,7 @@ from crossbarhttp import (
     ClientSignatureError,
     Client
 )
-from crossbarhttp.compat import HTTPError, HTTPException, mock
+from crossbarhttp.compat import HTTPError, HTTPException
 
 
 class CrossbarHttpTests(unittest.TestCase):
