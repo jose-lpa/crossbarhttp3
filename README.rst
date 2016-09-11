@@ -1,44 +1,35 @@
-=============
-Crossbar HTTP
-=============
+===============
+Crossbar HTTP 3
+===============
 
-.. image:: https://img.shields.io/pypi/v/crossbarhttp.svg
-    :target: https://pypi.python.org/pypi/crossbarhttp
+.. image:: https://travis-ci.org/jose-lpa/crossbarhttp3.svg?branch=master
+    :target: https://travis-ci.org/jose-lpa/crossbarhttp3
 
-.. image:: https://img.shields.io/pypi/dm/crossbarhttp.svg
-    :target: https://pypi.python.org/pypi/crossbarhttp
+.. image:: https://codecov.io/gh/jose-lpa/crossbarhttp3/branch/master/graph/badge.svg
+    :target: https://codecov.io/github/jose-lpa/crossbarhttp3
 
-.. image:: https://img.shields.io/circleci/token/7e41f7fa67cadba9f0a3465cfb04fdeee4c31357/project/thehq/python-crossbarhttp/master.svg
-    :target: https://circleci.com/gh/thehq/python-crossbarhttp/tree/master
+.. image:: https://img.shields.io/pypi/v/crossbarhttp3.svg
+    :target: https://pypi.python.org/pypi/crossbarhttp3
 
-.. image:: https://codecov.io/gh/thehq/python-crossbarhttp/branch/master/graph/badge.svg
-    :target: https://codecov.io/github/thehq/python-crossbarhttp
-
-.. image:: https://img.shields.io/pypi/l/crossbarhttp.svg
-    :target: https://pypi.python.org/pypi/crossbarhttp
+.. image:: https://img.shields.io/pypi/l/crossbarhttp3.svg
+    :target: https://pypi.python.org/pypi/crossbarhttp3
 
 Module that provides methods for accessing Crossbar.io HTTP Bridge Services
 
-Revision History
-================
+Fork of the original package by `Eric Chapman at The HQ`_, now supporting 
+Python 2.6, 2.7 and 3+ versions.
 
-- v0.1.2:
-    - Added ``ClientCallRuntimeError`` exception for general errors
-- v0.1.1:
-    - Added class defined Exceptions for specific events
-    - Added key/secret handling
-- v0.1:
-    - Initial version
 
 Installation
 ============
 
-Install Crossbar HTTP with pip::
+Install Crossbar HTTP 3 with pip::
 
-    pip install crossbarhttp
+    pip install crossbarhttp3
 
-Usage
-=====
+
+Basic usage
+===========
 
 Call
 ----
@@ -47,20 +38,26 @@ To call a Crossbar HTTP bridge, do the following:
 
 .. code-block:: python
 
-    client = Client("http://127.0.0.1/call")
-    result = client.call("com.example.add", 2, 3, offset=10)
+    client = Client('http://127.0.0.1/call')
+    result = client.call('com.example.add', 2, 3, offset=10)
     
-This will call the following method:
+This will call the following ``add_something`` method of an `ApplicationSession object`_:
 
 .. code-block:: python
 
-    def onJoin(self, details):
-        
-        def add_something(x, y, offset=0):
-            print("Add was called")
-            return x + y + offset
+    from autobahn.twisted.wamp import ApplicationSession
+    from twisted.internet.defer import inlineCallbacks
 
-        self.register(add_something, "com.example.add")
+
+    class MyComponent(ApplicationSession):
+        @inlineCallbacks
+        def onJoin(self, details):
+
+            def add_something(x, y, offset=0):
+                print('Add was called')
+                return x + y + offset
+
+            yield self.register(add_something, 'com.example.add')
         
 Publish
 -------
@@ -69,19 +66,26 @@ To publish to a Crossbar HTTP bridge, do the following:
 
 .. code-block:: python
 
-    client = Client("http://127.0.0.1/publish")
-    result = client.publish("com.example.event", event="new event")
+    client = Client('http://127.0.0.1/publish')
+    result = client.publish('com.example.event', event='new event')
     
-The receiving subscription would look like:
+The receiving subscription implemented in an ``ApplicationSession`` class would
+look like this:
 
 .. code-block:: python
 
-    def onJoin(self, details):
-        
-        def subscribe_something(event=None, **kwargs):
-            print("Publish was called with event %s" % event)
+    from autobahn.twisted.wamp import ApplicationSession
+    from twisted.internet.defer import inlineCallbacks
 
-        self.subscribe(subscribe_something, "com.example.event") 
+
+    class MyComponent(ApplicationSession):
+        @inlineCallbacks
+        def onJoin(self, details):
+
+            def subscribe_something(event=None, **kwargs):
+                print('Publish was called with event %s' % event)
+
+            yield self.subscribe(subscribe_something, 'com.example.event')
 
 Key/Secret
 ----------
@@ -91,7 +95,15 @@ and secret in the instantiation of the client.
 
 .. code-block:: python
 
-    client = Client("http://127.0.0.1/publish", key="key", secret="secret")
+    client = Client('http://127.0.0.1/publish', key='key', secret='secret')
+
+Additional options
+------------------
+
+There are two more options available in the client instantiation:
+
+- ``timeout``: Lets you specify a number of seconds from which an idle request to the Crossbar.io node will be dismissed (timed out). Defaults to ``None``, meaning that the global default timeout setting will be used.
+- ``silently``: If set to ``True``, any failed request to the Crossbar.io node will be returned by the client as ``None``, **without raising any exception**. Defaults to ``False``, meaning that all failures will raise their correspondent exceptions.
 
 Exceptions
 ----------
@@ -110,39 +122,39 @@ want the granularity.
 Contributing
 ============
 
-To contribute, fork the repo and submit a pull request.
+All bug-fixes or improvements to the library are welcome.
+
+To contribute, fork the repo and submit a pull request to the ``develop``
+branch. Please, try to follow this basic coding rules:
+
+- Always include some unit tests for the new code you write or the bugs you fix. Or, update the existent unit tests if necessary.
+- Stick to `PEP-8`_ styling.
 
 Testing
-=======
+-------
 
-The test can be run by using `Docker Compose`_.  Connect to a Docker host and
-type::
+In order to test Crossbar HTTP 3 properly you must have a Crossbar.io node in
+HTTP Bridge mode running in localhost port 8001. You can do that by yourself if
+you need it, but otherwise there is a `Docker image`_ already prepared, so you
+don't have to bother with this.
 
-    %> docker-compose build
-    %> docker-compose up
+To use that image and raise a Docker container with everything working, make
+sure you have `Docker installed`_ and execute this command::
 
-The Docker Compose file creates a generic router with an example service
-connected to it and runs the tests.
-    
-The service ``crossbarhttp_test_1`` will return a 0 value if the tests were
-successful and non zero otherwise. To get the pass/fail results from a command
-line, do the following:
+    docker run -t -p 8001:8001 --name crossbar-bridge joselpa/crossbar-http-bridge:0.2
 
-.. code-block:: shell
+Then you can run the unit tests in the regular way::
 
-    #!/usr/bin/env bash
-    
-    docker-compose build
-    docker-compose up
-    
-    exit $(docker-compose ps -q | xargs docker inspect -f '{{ .Name }} exited with status {{ .State.ExitCode }}' | grep test_1 | cut -f5 -d ' ')
-
-This is a little hacky (and hopefully Docker will fix it) but it will do the trick for now.
+    python setup.py test
 
 License
 =======
 
-`MIT License`_
+Released under `MIT License`_.
 
-.. _Docker Compose: https://docs.docker.com/compose/
+.. _Eric Chapman at The HQ: https://github.com/thehq/python-crossbarhttp
+.. _ApplicationSession object: http://autobahn.ws/python/wamp/programming.html#creating-components
+.. _PEP-8: https://www.python.org/dev/peps/pep-0008/
+.. _Docker image: https://hub.docker.com/r/joselpa/crossbar-http-bridge/
+.. _Docker installed: https://docs.docker.com/
 .. _MIT License: https://opensource.org/licenses/MIT
