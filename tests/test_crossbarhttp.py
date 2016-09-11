@@ -18,17 +18,17 @@ class CrossbarHttpTests(unittest.TestCase):
         self.url = 'http://localhost:8001'
 
     def test_call(self):
-        client = Client(self.url + "/call", timeout=20)
+        client = Client(self.url + "/call", timeout=5)
         result = client.call("test.add", 2, 3, offset=10)
         self.assertEqual(result, 15)
 
     def test_publish(self):
-        client = Client(self.url + "/publish", timeout=20)
+        client = Client(self.url + "/publish", timeout=5)
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
 
     def test_call_no_callee(self):
-        client = Client(self.url + "/call", timeout=20)
+        client = Client(self.url + "/call", timeout=5)
 
         self.assertRaises(
             ClientNoCalleeRegistered,
@@ -36,7 +36,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_call_bad_url(self):
-        client = Client(self.url + "/call_bad_url", timeout=20)
+        client = Client(self.url + "/call_bad_url", timeout=5)
 
         self.assertRaises(
             ClientBadUrl,
@@ -44,7 +44,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_publish_bad_url(self):
-        client = Client(self.url + "/publish_bad_url", timeout=20)
+        client = Client(self.url + "/publish_bad_url", timeout=5)
 
         self.assertRaises(
             ClientBadUrl,
@@ -52,7 +52,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_call_bad_host(self):
-        client = Client("http://bad:8001/call", timeout=20)
+        client = Client("http://bad:8001/call", timeout=5)
 
         self.assertRaises(
             ClientBadHost,
@@ -60,7 +60,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_publish_bad_host(self):
-        client = Client("http://bad:8001/publish", timeout=20)
+        client = Client("http://bad:8001/publish", timeout=5)
 
         self.assertRaises(
             ClientBadHost,
@@ -68,7 +68,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_call_missing_signature_params(self):
-        client = Client(self.url + "/call-signature", timeout=20)
+        client = Client(self.url + "/call-signature", timeout=5)
 
         self.assertRaises(
             ClientMissingParams,
@@ -79,7 +79,7 @@ class CrossbarHttpTests(unittest.TestCase):
         client = Client(
             self.url + "/call-signature",
             key="key", secret="bad secret",
-            timeout=20
+            timeout=5
         )
 
         self.assertRaises(
@@ -91,13 +91,13 @@ class CrossbarHttpTests(unittest.TestCase):
         client = Client(
             self.url + "/call-signature",
             key="key", secret="secret",
-            timeout=20
+            timeout=5
         )
         result = client.call("test.add", 2, 3, offset=10)
         self.assertEqual(result, 15)
 
     def test_publish_missing_signature_params(self):
-        client = Client(self.url + "/publish-signed", timeout=20)
+        client = Client(self.url + "/publish-signed", timeout=5)
 
         self.assertRaises(
             ClientMissingParams,
@@ -108,7 +108,7 @@ class CrossbarHttpTests(unittest.TestCase):
         client = Client(
             self.url + "/publish-signed",
             key="key", secret="bad secret",
-            timeout=20
+            timeout=5
         )
 
         self.assertRaises(
@@ -120,7 +120,7 @@ class CrossbarHttpTests(unittest.TestCase):
         client = Client(
             self.url + "/publish-signed",
             key="key", secret="secret",
-            timeout=20
+            timeout=5
         )
         publish_id = client.publish("test.publish", 4, 7, event="new event")
         self.assertNotEqual(publish_id, None)
@@ -129,7 +129,7 @@ class CrossbarHttpTests(unittest.TestCase):
         client = Client(
             self.url + "/call-signature",
             key="key", secret="secret",
-            timeout=20
+            timeout=5
         )
 
         client._make_api_call = mock.MagicMock(return_value="{}")
@@ -138,7 +138,7 @@ class CrossbarHttpTests(unittest.TestCase):
         self.assertEqual(result, None)
 
     def test_no_call_params(self):
-        client = Client(self.url + "/call", timeout=20)
+        client = Client(self.url + "/call", timeout=5)
 
         self.assertRaises(
             ClientMissingParams,
@@ -146,7 +146,7 @@ class CrossbarHttpTests(unittest.TestCase):
         )
 
     def test_call_exception(self):
-        client = Client(self.url + "/call", timeout=20)
+        client = Client(self.url + "/call", timeout=5)
         self.assertRaises(
             ClientCallRuntimeError,
             client.call, "test.exception"
@@ -155,7 +155,7 @@ class CrossbarHttpTests(unittest.TestCase):
 
 class TestClient(unittest.TestCase):
     def setUp(self):
-        self.crossbar_client = Client('http://localhost:8001', timeout=20)
+        self.crossbar_client = Client('http://localhost:8001', timeout=5)
 
     def test_client_instantiation_wrong_url(self):
         """
@@ -199,7 +199,7 @@ class TestClient(unittest.TestCase):
 
         crossbar_client = Client(
             'http://localhost:8001',
-            timeout=20,
+            timeout=5,
             silently=True
         )
         self.assertEqual(
@@ -233,7 +233,7 @@ class TestClient(unittest.TestCase):
 
         crossbar_client = Client(
             'http://localhost:8001',
-            timeout=20,
+            timeout=5,
             silently=True
         )
         self.assertEqual(
@@ -268,7 +268,7 @@ class TestClient(unittest.TestCase):
 
         crossbar_client = Client(
             'http://localhost:8001',
-            timeout=20,
+            timeout=5,
             silently=True
         )
         self.assertEqual(
@@ -303,7 +303,7 @@ class TestClient(unittest.TestCase):
 
         crossbar_client = Client(
             'http://localhost:8001',
-            timeout=20,
+            timeout=5,
             silently=True
         )
         self.assertEqual(
@@ -337,7 +337,7 @@ class TestClient(unittest.TestCase):
 
         crossbar_client = Client(
             'http://localhost:8001',
-            timeout=20,
+            timeout=5,
             silently=True
         )
         self.assertEqual(

@@ -6,5 +6,5 @@
 *.pyc
 
 # Package building
-crossbarhttp.egg-info/
+crossbarhttp3.egg-info/
 .eggs
