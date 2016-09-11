@@ -78,11 +78,14 @@ else:
         """
         Performs a request to the Crossbar.io node, Python2 compatible.
 
-        :param request: The `urllib.request.Request` object to perform the call.
-        :param timeout: The timeout in seconds, passed from the ``Client``. It's
-        here only for compatibility, not really used in this function version.
+        :param request: The `urllib.request.Request` object to perform the
+        call.
+        :param timeout: The timeout in seconds, passed from the ``Client``.
         :return: The response data.
         """
-        response = urlopen(request).read()
+        if timeout is None:
+            response = urlopen(request).read()
+        else:
+            response = urlopen(request, timeout=timeout).read()
 
         return json.loads(response)
