@@ -1,4 +1,10 @@
-.idea
-*.pyc
-.DS_Store
+# Development
 .coverage
+.DS_Store
+.idea/
+.tox/
+*.pyc
+
+# Package building
+crossbarhttp3.egg-info/
+.eggs
