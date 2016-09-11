@@ -30,38 +30,50 @@ class CrossbarHttpTests(unittest.TestCase):
     def test_call_no_callee(self):
         client = Client(self.url + "/call", timeout=20)
 
-        with self.assertRaises(ClientNoCalleeRegistered):
-            client.call("test.does_not_exist", 2, 3, offset=10)
+        self.assertRaises(
+            ClientNoCalleeRegistered,
+            client.call, "test.does_not_exist", 2, 3, offset=10
+        )
 
     def test_call_bad_url(self):
         client = Client(self.url + "/call_bad_url", timeout=20)
 
-        with self.assertRaises(ClientBadUrl):
-            client.call("test.add", 2, 3, offset=10)
+        self.assertRaises(
+            ClientBadUrl,
+            client.call, "test.add", 2, 3, offset=10
+        )
 
     def test_publish_bad_url(self):
         client = Client(self.url + "/publish_bad_url", timeout=20)
 
-        with self.assertRaises(ClientBadUrl):
-            client.publish("test.publish", 4, 7, event="new event")
+        self.assertRaises(
+            ClientBadUrl,
+            client.publish, "test.publish", 4, 7, event="new event"
+        )
 
     def test_call_bad_host(self):
         client = Client("http://bad:8001/call", timeout=20)
 
-        with self.assertRaises(ClientBadHost):
-            client.call("test.add", 2, 3, offset=10)
+        self.assertRaises(
+            ClientBadHost,
+            client.call, "test.add", 2, 3, offset=10
+        )
 
     def test_publish_bad_host(self):
         client = Client("http://bad:8001/publish", timeout=20)
 
-        with self.assertRaises(ClientBadHost):
-            client.publish("test.publish", 4, 7, event="new event")
+        self.assertRaises(
+            ClientBadHost,
+            client.publish, "test.publish", 4, 7, event="new event"
+        )
 
     def test_call_missing_signature_params(self):
         client = Client(self.url + "/call-signature", timeout=20)
 
-        with self.assertRaises(ClientMissingParams):
-            client.call("test.add", 2, 3, offset=10)
+        self.assertRaises(
+            ClientMissingParams,
+            client.call, "test.add", 2, 3, offset=10
+        )
 
     def test_call_bad_signature(self):
         client = Client(
@@ -70,8 +82,10 @@ class CrossbarHttpTests(unittest.TestCase):
             timeout=20
         )
 
-        with self.assertRaises(ClientSignatureError):
-            client.call("test.add", 2, 3, offset=10)
+        self.assertRaises(
+            ClientSignatureError,
+            client.call, "test.add", 2, 3, offset=10
+        )
 
     def test_call_signature(self):
         client = Client(
@@ -85,8 +99,10 @@ class CrossbarHttpTests(unittest.TestCase):
     def test_publish_missing_signature_params(self):
         client = Client(self.url + "/publish-signed", timeout=20)
 
-        with self.assertRaises(ClientMissingParams):
-            client.publish("test.publish", 4, 7, event="new event")
+        self.assertRaises(
+            ClientMissingParams,
+            client.publish, "test.publish", 4, 7, event="new event"
+        )
 
     def test_publish_bad_signature(self):
         client = Client(
@@ -95,8 +111,10 @@ class CrossbarHttpTests(unittest.TestCase):
             timeout=20
         )
 
-        with self.assertRaises(ClientSignatureError):
-            client.publish("test.publish", 4, 7, event="new event")
+        self.assertRaises(
+            ClientSignatureError,
+            client.publish, "test.publish", 4, 7, event="new event"
+        )
 
     def test_publish_signature(self):
         client = Client(
@@ -122,13 +140,17 @@ class CrossbarHttpTests(unittest.TestCase):
     def test_no_call_params(self):
         client = Client(self.url + "/call", timeout=20)
 
-        with self.assertRaises(ClientMissingParams):
-            client._make_api_call("POST", client.url)
+        self.assertRaises(
+            ClientMissingParams,
+            client._make_api_call, "POST", client.url
+        )
 
     def test_call_exception(self):
         client = Client(self.url + "/call", timeout=20)
-        with self.assertRaises(ClientCallRuntimeError):
-            client.call("test.exception")
+        self.assertRaises(
+            ClientCallRuntimeError,
+            client.call, "test.exception"
+        )
 
 
 class TestClient(unittest.TestCase):
